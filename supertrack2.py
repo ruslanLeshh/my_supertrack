@@ -81,8 +81,8 @@ class FeedForwardNN(nn.Module):
                 nn.ELU(),
                 nn.Linear(1024, out_dim)
             )
-        torch.manual_seed(14) #! stochasticity
-        random.seed(14) #! stochasticity
+        # torch.manual_seed(14) #! stochasticity
+        # random.seed(14) #! stochasticity
         self.model.apply(self.init_weights) # weight initialization
         # self.mean, self.std = None, None
 
@@ -187,11 +187,11 @@ class SUPERTRACK:
             # self.world_optim.zero_grad()
             # self.policy_optim.zero_grad()
 
-            # self.world.train()
-            # for param in self.world.parameters():
-            #         param.requires_grad =True
-            # self.train_world_model_real(batch_size=batch_size_w, dt=self.dt) # Get average loss for ONE mini-batch
-            # self.world_optim.zero_grad() # clear gradients from last iteration
+            self.world.train()
+            for param in self.world.parameters():
+                    param.requires_grad =True
+            self.train_world_model_real(batch_size=batch_size_w, dt=self.dt) # Get average loss for ONE mini-batch
+            self.world_optim.zero_grad() # clear gradients from last iteration
 
             # for name, param in self.world.named_parameters():
             #     if param.grad is not None:
@@ -207,12 +207,12 @@ class SUPERTRACK:
             # self.train_policy_model(dt=self.dt)
             # self.train_policy_model_accum()
 
-            # self.world.eval()
-            # for param in self.world.parameters():
-            #         param.requires_grad =False
+            self.world.eval()
+            for param in self.world.parameters():
+                    param.requires_grad =False
             # with autograd.detect_anomaly(): #!!!!
             self.train_policy_model_real(batch_size=batch_size_p, dt=self.dt)
-            # self.policy_optim.zero_grad()
+            self.policy_optim.zero_grad()
 
             # time.sleep(10000)
             # for name, param in self.policy.named_parameters():
@@ -1819,7 +1819,7 @@ class SUPERTRACK:
                 samples+=len(ep)
                 self.memory.append(ep) 
                 mean_time = (time.time() - episode_start) / len(ep)
-                MT_STAT.append(len(ep))
+                # MT_STAT.append(len(ep))
                 print(f"MEAN TIME: {mean_time:.6f} seconds, i: {i}")
             
 
@@ -1905,116 +1905,29 @@ class SUPERTRACK:
 
 import supertrack
 
-
+#*----- тестування 
 env = gym.make("SuperTrack-v0", render_mode="human")
-# env = gym.make("SuperTrack-v0")
 agent = SUPERTRACK(env)
 
-
-
-# agent.gater_data()
-# agent.load('supertrack_test.pt')  # load without memory
-# agent.load('supertrack_v02.pt')
-# agent.w_loss_history = []
-# agent.gater_data()
-# agent.load_m('supertrack_v1_10mem.pt')  # load without memory
-# agent.policy.mean, agent.policy.std, agent.world.mean, agent.world.std = global_means_std()
-
-# print(agent.s_means)
-# time.sleep(1000)
-# agent.learn(1)
-# agent.gater_data(mode='evaluate') # use statistics 
-torch.set_printoptions(threshold=torch.inf, precision=6)
-
-
-# agent.load_m('supertrack_60test1000.pt') #!
-# agent.load_m('supertrack_60test1000_2.pt') #!  
-# agent.load_m('supertrack_stage0_buff50.pt') 
-# agent.load_m('supertrack_stage0_buff50_2.pt')
-# agent.p_mean, agent.p_std, agent.w_mean, agent.w_std = global_means_std()
-# print("MANUAL\n\n",agent.w_mean)
-# print("STD\n\n",agent.w_std)
-# print('##########MEAN_STD',agent.p_mean,'\n\n\n #############', agent.p_std)
-
-# agent.memory.clear() # clear buffer
-# agent.world.train()
-# agent.load('supertrack_W45000.pt', hist=False) #!
-# agent.load('supertrack_P5000.pt', hist=False)
-
-# agent.load('supertrack_W_test.pt', hist=False)
-# agent.load('supertrack_P_test.pt', hist=True)
-# print("BATCHNORM\n\n",agent.policy.bn.running_mean)
-# time.sleep(10000)
-#*-----
-# # offsets = 0.
+# agent.load('supertrack_P_test.pt')
 agent.world.eval()
-agent.policy.eval()
-# MT_STAT=[]
+agent.policy.eval() 
+agent.gater_data(100)
 
-agent.gater_data(2000)
-# print(MT_STAT)
-# agent.world.eval()
-# for param in agent.world.parameters():
-#         param.requires_grad =False
+# agent.save_m('supertrack_60test100.pt') 
 #*-----
-# print("BATCHNORM_W\n\n",agent.world.bn.running_mean) #! 
-# print("BATCHNORM_P\n\n",agent.policy.bn.running_mean) #!
-# agent.learn(400, batch_size_w=256, batch_size_p=256) #1024*8-timesteps_per_batch
 
-# for i in range(1):
-    # agent.gater_data()
-    # agent.p_mean, agent.p_std, agent.w_mean, agent.w_std = global_means_std()
-    # agent.learn(10000, batch_size_w=1024, batch_size_p=512) # world 32 mb
-    # agent.memory.clear() # clear buffer
+#*----- тренування 
+# env = gym.make("SuperTrack-v0")
+# agent = SUPERTRACK(env)
 
+# # agent.load('supertrack_P_test.pt')
+# agent.load_m('supertrack_60test100.pt')
 
-#STEPS
-# agent.save_m('supertrack_stage0_buff.pt') # 1.9/15000      -I
-# agent.save('supertrack_stage0_W.pt') # 1000
-# agent.save('supertrack_stage0_W1.pt') # 1000
-# agent.save('supertrack_stage0_W5.pt') # 4000
-# agent.save('supertrack_stage0_W6.pt') # 1000
-# agent.save_m('supertrack_stage0_buff50.pt') # 50000 +5mocaps
-# agent.save('supertrack_stage0_W7.pt') # 1000
-# agent.save('supertrack_stage0_W9.pt') # 4000
-# agent.save('supertrack_stage0_W10.pt') # 10000
-# agent.save('supertrack_stage0_W11.pt') # 10000
-# agent.save_m('supertrack_buff1.pt') #! 1.9/15000  
-# agent.save('supertrack_test_buff1.pt') # 50/1buff TESTED
-# agent.save('supertrack_test_buff1_E.pt') # EVALUATED TESTS
-# agent.save('supertrack_test_buff1_E50.pt') # EVALUATED TESTS
-# agent.save('supertrack_stage0_W12.pt') # 10000
+# agent.learn(10, batch_size_w=256, batch_size_p=256) 
 
-# agent.save('supertrack_stage0_W13.pt') # 1000
-# agent.save('supertrack_stage0_W13_clip.pt') # 0.1
-# agent.save('supertrack_stage0_W13_512.pt') 
-# agent.save('supertrack_stage0_W13_1024_01.pt') 
-
-# agent.save_m('supertrack_stage0_buff50_2.pt') #! 50000
-
-#*----
-# agent.save('supertrack_stage0_W15_1024.pt') #15000 buff1-2-1 +
-# agent.save('supertrack_stage0_P15_1024.pt') 
-# agent.save('supertrack_stage0_W16_1024.pt')
-# agent.save('supertrack_stage0_P16_1024.pt')
-#*---
-# agent.save_m('supertrack_buff50_1bvh.pt') #!
-# agent.save('supertrack_W100000_1024.pt') #*
-# agent.save('supertrack_P25000_1024.pt') #! is fucked
-# agent.save('supertrack_W10000_1024_2.pt') # 10000 buff50_1 + 10000 supertrack_stage0_buff50_2
-# agent.save('supertrack_P10000_1024_2.pt')
-# agent.save('supertrack_P10000_1024_3.pt') #10000
-# agent.save_m('supertrack_buff50_2bvh.pt') #! with kin vel data
-
-# agent.save('supertrack_W10000_1024_02.pt') #* new + kin vel data 10+10
-# agent.save('supertrack_P10000_1024_01.pt') #* new 
-
-# agent.save_m('supertrack_buff50.pt') #! 
-# agent.save('supertrack_W45000.pt')
-
-# agent.save_m('supertrack_60test1000_2.pt') 
-# agent.save('supertrack_W_test.pt')
 # agent.save('supertrack_P_test.pt')
+#*-----
 
 # print(np.array(agent.memory[1]).shape) # \ (10episodes, 95-97frames,3) 
 
