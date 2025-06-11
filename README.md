@@ -116,7 +116,7 @@ git clone https://github.com/ruslanLeshh/my_supertrack.git
 
 ---
 
-## 🧾 Ресурси що допоможать відтворити цю роботу самостійно.
+## 🧾 Ресурси що допоможуть відтворити цю роботу самостійно.
 
 - https://gerardmaggiolino.medium.com/creating-openai-gym-environments-with-pybullet-part-1-13895a622b24
 - https://medium.com/analytics-vidhya/coding-ppo-from-scratch-with-pytorch-part-1-4-613dfc1b14c8
